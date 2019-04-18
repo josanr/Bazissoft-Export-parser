@@ -95,7 +95,9 @@ class BazisXmlParser {
             part.DrillExtra.push(parsed);
         }
 
-
+        if(partItem.СписокПазов.Паз !== undefined){
+            part.isNotch = true;
+        }
 
         this.result.push(part);
     }

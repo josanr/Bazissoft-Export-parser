@@ -22,46 +22,42 @@ class BazisXmlParser {
 
             const containerQuant = +data.Проект.Изделие.Количество;
 
-
-            if(data.Проект.Изделие.СписокЭлементов.Блок === undefined){
-                let partsContainer = data.Проект.Изделие.СписокЭлементов.Объект;
-                for(let idx in partsContainer){
-                    const part = partsContainer[idx];
-                    if(part.ТипОбъекта !== "Панель"){
-                        continue;
-                    }
-                    this.parseParts(part, containerQuant);
-                }
-            }else{
-                let modelContainers = data.Проект.Изделие.СписокЭлементов.Блок;
-                for (let idx in modelContainers) {
-                    const model = modelContainers[idx];
-                    this.parseModel(model, containerQuant);
-                }
-            }
+            this.parseNode(data.Проект.Изделие, containerQuant);
 
         });
 
     }
 
-    parseModel(model: any, quant: number) {
+    private parseNode(block: any, quant: number){
+        let newQuant = quant * +block.Количество;
+        if(block.СписокЭлементов.Объект !== undefined){
+            for(const idx in block.СписокЭлементов.Объект){
+                const object = block.СписокЭлементов.Объект[idx];
+                if(object.ТипОбъекта !== 'Панель'){
+                    continue;
+                }
 
-        const modelCount = +model.Количество * quant;
-        let parts = model.СписокЭлементов.Объект;
-
-        for(let idx in parts){
-            const part = parts[idx];
-            if(part.ТипОбъекта !== "Панель"){
-                continue;
+                this.parsePart(object, newQuant);
             }
-            this.parseParts(part, modelCount);
+        }
+
+        if(block.СписокЭлементов.Блок !== undefined){
+            if(Array.isArray(block.СписокЭлементов.Блок)) {
+                for (const idx in block.СписокЭлементов.Блок) {
+                    const blockItem = block.СписокЭлементов.Блок[idx];
+
+                    this.parseNode(blockItem, newQuant);
+                }
+            }else{
+                this.parseNode(block.СписокЭлементов.Блок, newQuant);
+            }
         }
     }
 
-    parseParts(partItem: any, quant: number) {
-        // console.log(JSON.stringify(partItem.Отверстия, null, 1));
-        console.log(partItem.Наименование);
-        console.log("===============================================================\n");
+
+
+    parsePart(partItem: any, quant: number) {
+
         let part = new Part();
         part.comment = partItem.Наименование;
         part.length = +partItem.Длина;
@@ -85,16 +81,66 @@ class BazisXmlParser {
 
         if(partItem.Отверстия !== ""){
             part.isDrill = true;
-            for(let idx in partItem.Отверстия.Отверстие){
-                const drillItem = partItem.Отверстия.Отверстие[idx];
-                console.log(drillItem);
-                console.log("===============================================================\n");
-            }
+            let parsed = this.parseDrill(partItem, quant);
+            part.DrillExtra.push(parsed);
         }
 
 
 
-        // this.result.push(part);
+        this.result.push(part);
+    }
+
+    private parseDrill(partItem: any, quant: number): DrillParsed {
+
+        let parsed = new DrillParsed();
+
+
+        for (let idx in partItem.Отверстия.Отверстие) {
+            const drillItem = partItem.Отверстия.Отверстие[idx];
+            const point = new DrillPoint();
+            point.depth = +drillItem.Глубина;
+            point.diameter = +drillItem.Диаметр;
+            point.directionX = +drillItem.НаправлениеX;
+            point.directionY = +drillItem.НаправлениеY;
+            point.directionZ = +drillItem.НаправлениеZ;
+            point.x = +drillItem.ПозицияX;
+            point.y = +drillItem.ПозицияY;
+            point.z = +drillItem.ПозицияZ;
+
+            if (+drillItem.НаправлениеX == 1) {
+                point.side = 3;
+                point.corner = [4];
+            } else if (+drillItem.НаправлениеX == -1) {
+                point.side = 1;
+                point.corner = [2];
+            } else if (+drillItem.НаправлениеY == 1) {
+                point.side = 4;
+                point.corner = [3];
+            } else if (+drillItem.НаправлениеY == -1) {
+                point.side = 2;
+                point.corner = [1];
+            } else if (+drillItem.НаправлениеZ == 1) {
+                point.side = 0;
+                point.corner = [1];
+            } else if (+drillItem.НаправлениеZ == -1) {
+                point.side = 5;
+                point.corner = [1];
+            } else {
+                console.log("===============error============");
+            }
+
+            parsed.totalCount += quant;
+            if (parsed.countByDiam[point.diameter] == undefined) {
+                parsed.countByDiam[point.diameter] = 0;
+            }
+
+            parsed.countByDiam[point.diameter] += quant;
+            parsed.items.push(point);
+
+        }
+
+        return parsed;
+
     }
 
     getGoodId(good: string): number
@@ -127,7 +173,7 @@ class Part {
     W2: number = 0;
     isNotch: boolean = false;
     isDrill: boolean = false;
-    DrillExtra: Array<DrillParsed>
+    DrillExtra: Array<DrillParsed> = []
 }
 
 
@@ -136,27 +182,23 @@ class DrillParsed {
     totalCount: number = 0;
     countByDiam: {[key: number]: number} = {};
     items: Array<DrillPoint> = [];
+
+
+
 }
 class DrillPoint {
     type: string = "BV";
     /**
-     * Тыл - 0
-     * W1 - 1
-     * L2 - 2
-     * W2 - 3
-     * L1 - 4
-     * Лицо - 5
+     * Тыл - 5
+     * W1 - 3
+     * L2 - 4
+     * W2 - 1
+     * L1 - 2
+     * Лицо - 0
      */
 
     side: 0|1|2|3|4|5 = 0;
-
-    /**
-     * L1W1 - 1
-     * L2W1 - 2
-     * L2W2 - 3
-     * L1W2 - 4
-     */
-    corner: Array<number> = [2];
+    corner: Array<number> = [];
     x: number;
     y: number;
     z: number;
@@ -166,6 +208,9 @@ class DrillPoint {
     repDX: number = 0;
     repDy: number = 0;
     repCount: number = 0;
+    directionX: number = 0;
+    directionY: number = 0;
+    directionZ: number = 0;
 }
 
 export default BazisXmlParser

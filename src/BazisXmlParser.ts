@@ -15,6 +15,16 @@ class BazisXmlParser {
 
     }
 
+    getSpec() : Array<Part>
+    {
+        return this.result;
+    }
+
+    getGoodSync() : Array<string>
+    {
+        return this.goodSync;
+    }
+
     run() {
         let filestring = fs.readFileSync("../tests/02-399_spec.xml", "utf8");
         parseString(filestring, {explicitArray : false, mergeAttrs : true}, (err, data) => {

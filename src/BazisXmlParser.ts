@@ -8,11 +8,11 @@ class BazisXmlParser {
     path: string;
     result: Array<Part>;
     goodSync : Array<string> = [];
-
+    error : Error;
     constructor() {
         this.path = "/project";
         this.result = [];
-
+        this.error = null;
     }
 
     getSpec() : Array<Part>
@@ -29,12 +29,11 @@ class BazisXmlParser {
         let filestring = fs.readFileSync(filePath, "utf8");
         parseString(filestring, {explicitArray : false, mergeAttrs : true}, (err, data) => {
 
-            let error = null;
             const containerQuant = +data.Проект.Изделие.Количество;
 
             this.parseNode(data.Проект.Изделие, containerQuant);
 
-            callback(error, this.getSpec(), this.getGoodSync())
+            callback(this.error, this.getSpec(), this.getGoodSync())
 
         });
 
@@ -42,13 +41,11 @@ class BazisXmlParser {
 
     parse(xmlString: string, callback: Function){
         parseString(xmlString, {explicitArray : false, mergeAttrs : true}, (err, data) => {
-            let error = null;
-
             const containerQuant = +data.Проект.Изделие.Количество;
 
             this.parseNode(data.Проект.Изделие, containerQuant);
 
-            callback(error, this.getSpec(), this.getGoodSync())
+            callback(this.error, this.getSpec(), this.getGoodSync())
 
         });
     }
@@ -158,7 +155,7 @@ class BazisXmlParser {
                 point.side = 5;
                 point.corner = [1];
             } else {
-                console.log("===============error============");
+                this.error = new Error("Unable to detect drill side");
             }
 
             parsed.totalCount += quant;

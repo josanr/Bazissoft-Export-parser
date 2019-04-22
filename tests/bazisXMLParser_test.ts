@@ -31,7 +31,7 @@ describe('parse file', () => {
     });
 
 
-    it('Edgebaond is set correctly', () => {
+    it('Edgeband is set correctly', () => {
         let parser = new BazisXmlParser();
         let filePath = "./tests/test02.xml";
         parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {

@@ -96,16 +96,16 @@ class BazisXmlParser {
         part.pos = +partItem.Позиция;
         part.id = +partItem.Позиция;
         part.gid = this.getGoodId(partItem.ОсновнойМатериал.Наименование);
-        if(partItem.СписокКромок1 !== "") {
+        if(partItem.СписокКромок1 !== "" && partItem.СписокКромок1.Кромка.Наименование !== "") {
             part.W1 = this.getGoodId(partItem.СписокКромок1.Кромка.Наименование);
         }
-        if(partItem.СписокКромок2 !== "") {
+        if(partItem.СписокКромок2 !== "" && partItem.СписокКромок2.Кромка.Наименование !== "") {
             part.W2 = this.getGoodId(partItem.СписокКромок2.Кромка.Наименование);
         }
-        if(partItem.СписокКромок3 !== "") {
+        if(partItem.СписокКромок3 !== "" && partItem.СписокКромок3.Кромка.Наименование !== "") {
             part.L1 = this.getGoodId(partItem.СписокКромок3.Кромка.Наименование);
         }
-        if(partItem.СписокКромок4 !== "") {
+        if(partItem.СписокКромок4 !== "" && partItem.СписокКромок4.Кромка.Наименование !== "") {
             part.L2 = this.getGoodId(partItem.СписокКромок4.Кромка.Наименование);
         }
 

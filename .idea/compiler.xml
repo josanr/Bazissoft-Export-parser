@@ -5,5 +5,7 @@
     <option name="recompileOnChanges" value="true" />
     <option name="scopeName" value="Unnamed" />
     <option name="showAllErrors" value="true" />
+    <option name="typeScriptServiceDirectory" value="$PROJECT_DIR$/node_modules/typescript/bin" />
+    <option name="versionType" value="SERVICE_DIRECTORY" />
   </component>
 </project>

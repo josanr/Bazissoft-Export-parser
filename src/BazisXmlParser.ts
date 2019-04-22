@@ -29,6 +29,20 @@ class BazisXmlParser {
         let filestring = fs.readFileSync(filePath, "utf8");
         parseString(filestring, {explicitArray : false, mergeAttrs : true}, (err, data) => {
 
+            let error = null;
+            const containerQuant = +data.Проект.Изделие.Количество;
+
+            this.parseNode(data.Проект.Изделие, containerQuant);
+
+            callback(error, this.getSpec(), this.getGoodSync())
+
+        });
+
+    }
+
+    parse(xmlString: string, callback: Function){
+        parseString(xmlString, {explicitArray : false, mergeAttrs : true}, (err, data) => {
+            let error = null;
 
             const containerQuant = +data.Проект.Изделие.Количество;
 

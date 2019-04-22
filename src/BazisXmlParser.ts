@@ -25,8 +25,8 @@ class BazisXmlParser {
         return this.goodSync;
     }
 
-    run() {
-        let filestring = fs.readFileSync("../tests/02-399_spec.xml", "utf8");
+    run(filePath: string, callback: Function) {
+        let filestring = fs.readFileSync(filePath, "utf8");
         parseString(filestring, {explicitArray : false, mergeAttrs : true}, (err, data) => {
 
 
@@ -34,20 +34,26 @@ class BazisXmlParser {
 
             this.parseNode(data.Проект.Изделие, containerQuant);
 
-        });
+            callback(error, this.getSpec(), this.getGoodSync())
 
+        });
     }
+
 
     private parseNode(block: any, quant: number){
         let newQuant = quant * +block.Количество;
         if(block.СписокЭлементов.Объект !== undefined){
-            for(const idx in block.СписокЭлементов.Объект){
-                const object = block.СписокЭлементов.Объект[idx];
-                if(object.ТипОбъекта !== 'Панель'){
-                    continue;
-                }
+            if(Array.isArray(block.СписокЭлементов.Объект)) {
+                for (const idx in block.СписокЭлементов.Объект) {
+                    const object = block.СписокЭлементов.Объект[idx];
+                    if (object.ТипОбъекта !== 'Панель') {
+                        continue;
+                    }
 
-                this.parsePart(object, newQuant);
+                    this.parsePart(object, newQuant);
+                }
+            }else{
+                this.parsePart(block.СписокЭлементов.Объект, newQuant);
             }
         }
 
@@ -66,7 +72,7 @@ class BazisXmlParser {
 
 
 
-    parsePart(partItem: any, quant: number) {
+    private parsePart(partItem: any, quant: number) {
 
         let part = new Part();
         part.comment = partItem.Наименование;
@@ -155,7 +161,7 @@ class BazisXmlParser {
 
     }
 
-    getGoodId(good: string): number
+    private getGoodId(good: string): number
     {
         for(let idx = 0; idx < this.goodSync.length; idx++){
             if(this.goodSync[idx] === good){
@@ -225,4 +231,5 @@ class DrillPoint {
     directionZ: number = 0;
 }
 
-export default BazisXmlParser
+export {BazisXmlParser};
+export {Part};

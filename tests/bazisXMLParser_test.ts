@@ -45,7 +45,23 @@ describe('parse file', () => {
             expect(part.W1).to.equal(1);
             expect(part.W2).to.equal(0);
         });
+    });
 
+    it('is notch set correctly', () => {
+        let parser = new BazisXmlParser();
+        let filePath = "./tests/test02.xml";
+        parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {
+            let part;
+
+            part = result[0];
+            expect(part.isNotch).to.equal(false);
+            part = result[1];
+            expect(part.isNotch).to.equal(true);
+            part = result[2];
+            expect(part.isNotch).to.equal(false);
+
+        });
 
     });
+
 });

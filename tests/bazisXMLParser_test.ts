@@ -1,4 +1,4 @@
-import {BazisXmlParser, Part} from "../src/BazisXmlParser"
+import {BazisXmlParser, Part, DrillParsed} from "../src/BazisXmlParser"
 import { expect } from 'chai';
 import 'mocha';
 import * as fs from "fs";
@@ -64,4 +64,32 @@ describe('parse file', () => {
 
     });
 
+
+    it('is drill set correctly', () => {
+        let parser = new BazisXmlParser();
+        let filePath = "./tests/test03.xml";
+        parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {
+            let part;
+
+            part = result[0];
+            expect(part.isDrill).to.equal(true);
+
+
+        });
+
+    });
+
+    it('is drill equal to type drill parsed', () => {
+        let parser = new BazisXmlParser();
+        let filePath = "./tests/test03.xml";
+        parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {
+            let part;
+
+            part = result[0];
+            expect(part.DrillExtra).to.instanceOf(DrillParsed)
+
+
+        });
+
+    });
 });

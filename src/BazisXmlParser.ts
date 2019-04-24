@@ -109,7 +109,7 @@ class BazisXmlParser {
         if(partItem.Отверстия !== ""){
             part.isDrill = true;
             let parsed = this.parseDrill(partItem, quant);
-            part.DrillExtra.push(parsed);
+            part.DrillExtra = parsed;
         }
 
         if(partItem.СписокПазов.Паз !== undefined){
@@ -202,7 +202,7 @@ class Part {
     W2: number = 0;
     isNotch: boolean = false;
     isDrill: boolean = false;
-    DrillExtra: Array<DrillParsed> = []
+    DrillExtra: DrillParsed
 }
 
 
@@ -242,5 +242,5 @@ class DrillPoint {
     directionZ: number = 0;
 }
 
-export {BazisXmlParser};
-export {Part};
+export {BazisXmlParser, Part, DrillParsed};
+

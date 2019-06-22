@@ -115,7 +115,10 @@ class BazisXmlParser {
         if(partItem.СписокПазов.Паз !== undefined){
             part.isNotch = true;
         }
-
+        if(partItem.ОблицовкаПласти1.Пласть !== undefined || partItem.ОблицовкаПласти2.Пласть !== undefined){
+            part.isGlue = true;
+            part.num *= 2;
+        }
         this.result.push(part);
     }
 
@@ -202,6 +205,7 @@ class Part {
     W2: number = 0;
     isNotch: boolean = false;
     isDrill: boolean = false;
+    isGlue: boolean = false;
     DrillExtra: DrillParsed
 }
 

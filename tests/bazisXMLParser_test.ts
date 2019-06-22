@@ -92,4 +92,21 @@ describe('parse file', () => {
         });
 
     });
+
+
+    it('Self glueup is made by face edge', () => {
+        let parser = new BazisXmlParser();
+        let filePath = "./tests/test06.xml";
+        parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {
+            let part;
+
+            part = result[2];
+
+            expect(part.isDrill).to.equal(true);
+            expect(part.num).to.equal(2);
+
+
+        });
+
+    });
 });

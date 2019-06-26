@@ -115,9 +115,41 @@ class BazisXmlParser {
         if(partItem.СписокПазов.Паз !== undefined){
             part.isNotch = true;
         }
-        if(partItem.ОблицовкаПласти1.Пласть !== undefined || partItem.ОблицовкаПласти2.Пласть !== undefined){
+        if(partItem.ОблицовкаПласти1.Пласть !== undefined){
             part.isGlue = true;
-            part.num *= 2;
+            if(this.getGoodId(partItem.ОблицовкаПласти1.Пласть.Наименование) === part.gid) {
+                part.num *= 2;
+            }else{
+                let addPart = new Part();
+                addPart.comment = part.comment  + "-дополнение";
+                addPart.length = part.length ;
+                addPart.width = part.width ;
+                addPart.num = part.num ;
+                addPart.pos = part.pos ;
+                addPart.id = part.id ;
+                addPart.gid = this.getGoodId(partItem.ОблицовкаПласти1.Пласть.Наименование);
+                addPart.isGlue = true;
+
+                this.result.push(addPart);
+            }
+        }
+
+        if(partItem.ОблицовкаПласти2.Пласть !== undefined){
+            part.isGlue = true;
+            if(this.getGoodId(partItem.ОблицовкаПласти2.Пласть.Наименование) === part.gid) {
+                part.num *= 2;
+            }else {
+                let addPart = new Part();
+                addPart.comment = part.comment + "-дополнение";
+                addPart.length = part.length;
+                addPart.width = part.width;
+                addPart.num = part.num;
+                addPart.pos = part.pos;
+                addPart.id = part.id;
+                addPart.gid = this.getGoodId(partItem.ОблицовкаПласти2.Пласть.Наименование);
+                addPart.isGlue = true;
+                this.result.push(addPart);
+            }
         }
         this.result.push(part);
     }

@@ -102,10 +102,32 @@ describe('parse file', () => {
 
             part = result[2];
 
-            expect(part.isDrill).to.equal(true);
+            expect(part.isGlue).to.equal(true);
             expect(part.num).to.equal(2);
 
 
+        });
+
+    });
+
+    it('Self glueup is made by face edge with different Materials', () => {
+        let parser = new BazisXmlParser();
+        let filePath = "./tests/test06.xml";
+        parser.run(filePath, (error: Error, result: Array<Part>, goodSync:Array<string>) => {
+            let part;
+
+            let partAdd = result[3];
+
+            expect(partAdd.isGlue).to.equal(true);
+            expect(partAdd.num).to.equal(1);
+
+            part = result[4];
+
+            expect(part.isGlue).to.equal(true);
+            expect(part.num).to.equal(1);
+
+
+            expect(part.gid === partAdd.gid).to.equal(false)
         });
 
     });

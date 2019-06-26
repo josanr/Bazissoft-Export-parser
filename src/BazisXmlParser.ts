@@ -117,6 +117,8 @@ class BazisXmlParser {
         }
         if(partItem.ОблицовкаПласти1.Пласть !== undefined){
             part.isGlue = true;
+            part.length += 20;
+            part.width += 20;
             if(this.getGoodId(partItem.ОблицовкаПласти1.Пласть.Наименование) === part.gid) {
                 part.num *= 2;
             }else{
@@ -136,8 +138,11 @@ class BazisXmlParser {
 
         if(partItem.ОблицовкаПласти2.Пласть !== undefined){
             part.isGlue = true;
+            part.length += 20;
+            part.width += 20;
             if(this.getGoodId(partItem.ОблицовкаПласти2.Пласть.Наименование) === part.gid) {
                 part.num *= 2;
+
             }else {
                 let addPart = new Part();
                 addPart.comment = part.comment + "-дополнение";
